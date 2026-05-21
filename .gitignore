@@ -1,0 +1,82 @@
+# Recommended .gitignore for this Python + Docker + Windows project
+# Ignore Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+venv.bak/
+
+# Environment variable files (often contain secrets)
+.env
+.env.*
+
+# Distribution / build
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Pytest and other caches
+.pytest_cache/
+.mypy_cache/
+.tox/
+htmlcov/
+
+# Coverage
+.coverage
+.coverage.*
+coverage.xml
+
+# IDE/editor settings
+.vscode/
+*.code-workspace
+.idea/
+
+# OS files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# SQLite / local databases (if used)
+*.db
+*.sqlite3
+instance/
+
+# Logs
+*.log
+
+# Docker Compose override and local compose files
+docker-compose.override.yml
+
+# Secrets / keys
+*.pem
+*.key
+*.crt
+
+# Python packaging
+*.whl
+*.egg
+
+# Other caches and editor/temp files
+*.swp
+*.swo
+__pypackages__/
+.ropeproject/
+
+# Node/npm artifacts (if any frontend included)
+node_modules/
+npm-debug.log*
+
+# End of .gitignore
+
