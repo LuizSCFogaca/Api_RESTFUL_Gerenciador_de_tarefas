@@ -11,21 +11,28 @@ class Tarefa(Base):
     titulo = Column(String)
     descricao = Column(String)
     status = Column(String, default="pendente")
-    atribuida = Column(Integer, nullable=True)
-    usuario_id = Column(Integer, ForeignKey("usuario_id"))
+    # usuario_id é a ÚNICA referência ao dono/responsável da tarefa (FK -> usuarios.id)
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
     dono = relationship("Usuario", back_populates="tarefas")
 
 class TarefaCreate(BaseModel):
     titulo: str
     descricao: str
     status: Optional[str] = "pendente"
+    usuario_id: Optional[int] = None  # a quem a tarefa é atribuída (opcional na criação)
 
 class TarefaResponse(BaseModel):
     id: int
     titulo: str
     descricao: str
     status: str
-    atribuida: Optional[int]
+    usuario_id: Optional[int]
 
     class Config:
         from_attributes = True
+
+class TarefaUpdate(BaseModel):
+    titulo: Optional[str] = None
+    descricao: Optional[str] = None
+    status: Optional[str] = None
+    usuario_id: Optional[int] = None
