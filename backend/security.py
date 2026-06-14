@@ -4,14 +4,9 @@ from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
 
-# Em produção, defina SECRET_KEY como variável de ambiente.
 SECRET_KEY = os.getenv("SECRET_KEY", "troque-esta-chave-secreta-em-producao")
 ALGORITHM = "HS256"
 EXPIRACAO_MINUTOS = 60
-
-# Blacklist em memória de tokens revogados (usada no logout).
-# Limitação: zera ao reiniciar a API. Em produção usar-se-ia Redis ou tabela no banco.
-tokens_revogados: set[str] = set()
 
 
 def hash_senha(senha: str) -> str:

@@ -6,7 +6,7 @@ def criar(db: Session, dados: createUsuario) -> Usuario:
     novo = Usuario(
         nome=dados.nome,
         email=dados.email,
-        senha=hash_senha(dados.senha),  # nunca armazenar a senha em texto puro
+        senha=hash_senha(dados.senha),  #nao armazena senha em string pura
     )
     db.add(novo)
     db.commit()
@@ -14,7 +14,6 @@ def criar(db: Session, dados: createUsuario) -> Usuario:
     return novo
 
 def buscar_por_id(db: Session, usuario_id: int) -> Usuario | None:
-    # Só retorna contas ativas; usuários "soft deleted" ficam invisíveis.
     return (
         db.query(Usuario)
         .filter(Usuario.id == usuario_id, Usuario.ativo == True)
@@ -22,6 +21,7 @@ def buscar_por_id(db: Session, usuario_id: int) -> Usuario | None:
     )
 
 def buscar_por_email(db: Session, email: str) -> Usuario | None:
+    # usado no login para localizar a conta ativa pelo email
     return (
         db.query(Usuario)
         .filter(Usuario.email == email, Usuario.ativo == True)
@@ -30,7 +30,7 @@ def buscar_por_email(db: Session, email: str) -> Usuario | None:
 
 def atualizar(db: Session, usuario: Usuario, dados: UsuarioUpdate) -> Usuario:
     campos = dados.model_dump(exclude_unset=True)
-    if "senha" in campos:  # se a senha mudou, guarda o hash, não o texto puro
+    if "senha" in campos:  #rehash da senha
         campos["senha"] = hash_senha(campos["senha"])
     for campo, valor in campos.items():
         setattr(usuario, campo, valor)
@@ -39,6 +39,5 @@ def atualizar(db: Session, usuario: Usuario, dados: UsuarioUpdate) -> Usuario:
     return usuario
 
 def remover(db: Session, usuario: Usuario) -> None:
-    # Soft delete: não apaga a linha, apenas marca como inativa.
-    usuario.ativo = False
+    usuario.ativo = False #softdelete
     db.commit()

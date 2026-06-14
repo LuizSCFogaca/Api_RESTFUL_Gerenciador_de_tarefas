@@ -7,12 +7,10 @@ from backend.auth import get_current_user
 
 router = APIRouter(prefix="/users", tags=["Usuários"])
 
-# Cadastro é público (registro de novos usuários).
 @router.post("", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
 def cadastrar_usuario(dados: createUsuario, db: Session = Depends(get_db)):
     return usuarioService.criar(db, dados)
 
-# As rotas abaixo exigem token JWT válido.
 @router.get("/{usuario_id}", response_model=UsuarioResponse, dependencies=[Depends(get_current_user)])
 def ler_usuario(usuario_id: int, db: Session = Depends(get_db)):
     usuario = usuarioService.buscar_por_id(db, usuario_id)

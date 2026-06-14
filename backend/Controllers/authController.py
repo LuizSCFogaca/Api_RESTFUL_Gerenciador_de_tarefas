@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
 from backend.database import get_db
 from backend.Services import usuarioService
-from backend.security import verificar_senha, criar_token, tokens_revogados
-from backend.auth import bearer
+from backend.security import verificar_senha, criar_token
+from backend.auth import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Autenticação"])
 
@@ -24,7 +23,6 @@ class TokenResponse(BaseModel):
 @router.post("/login", response_model=TokenResponse)
 def login(dados: LoginRequest, db: Session = Depends(get_db)):
     usuario = usuarioService.buscar_por_email(db, dados.email)
-    # Mensagem genérica de propósito: não revela se foi o email ou a senha que errou.
     if not usuario or not verificar_senha(dados.senha, usuario.senha):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -34,7 +32,5 @@ def login(dados: LoginRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/logout")
-def logout(credenciais: HTTPAuthorizationCredentials = Depends(bearer)):
-    # Revoga o token adicionando-o à blacklist em memória.
-    tokens_revogados.add(credenciais.credentials)
+def logout(usuario=Depends(get_current_user)):
     return {"mensagem": "Logout realizado com sucesso"}

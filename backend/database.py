@@ -1,16 +1,17 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
 
-# Banco SQLite local (arquivo tarefas.db na raiz do projeto).
-SQLALCHEMY_DATABASE_URL = "sqlite:///./tarefas.db"
+load_dotenv()
 
-# check_same_thread=False é necessário para o SQLite funcionar com o FastAPI,
-# que pode acessar a conexão em threads diferentes.
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
+SQLALCHEMY_DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://user_tarefas:password_tarefas@localhost:5432/db_tarefas",
 )
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

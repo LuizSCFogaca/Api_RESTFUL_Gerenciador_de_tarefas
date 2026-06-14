@@ -11,6 +11,26 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_tarefas -d db_tarefas"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: tarefas_api
+    restart: always
+    env_file:
+      - .env
+    environment:
+      # dentro da rede do compose o banco e acessado pelo host "db"
+      DATABASE_URL: postgresql://user_tarefas:password_tarefas@db:5432/db_tarefas
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
 
   pgadmin:
     image: dpage/pgadmin4

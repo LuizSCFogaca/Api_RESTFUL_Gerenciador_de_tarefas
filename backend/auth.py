@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from backend.database import get_db
 from backend.Services import usuarioService
-from backend.security import decodificar_token, tokens_revogados
+from backend.security import decodificar_token
 
 # Esquema que lê o header "Authorization: Bearer <token>".
 bearer = HTTPBearer()
@@ -22,9 +22,6 @@ def get_current_user(
         detail="Token inválido ou expirado",
         headers={"WWW-Authenticate": "Bearer"},
     )
-
-    if token in tokens_revogados:  # token que passou por logout
-        raise erro
 
     try:
         payload = decodificar_token(token)
