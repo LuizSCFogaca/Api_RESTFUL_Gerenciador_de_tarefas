@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.Services import usuarioService
 from backend.security import decodificar_token
+from backend.Models.usuariosModel import Papel
 
 # Esquema que lê o header "Authorization: Bearer <token>".
 bearer = HTTPBearer()
@@ -38,7 +39,7 @@ def get_current_user(
 
 def requer_admin(usuario=Depends(get_current_user)):
     """Dependency para rotas exclusivas de administrador. Devolve 403 para demais papéis."""
-    if usuario.papel != "admin":
+    if usuario.papel != Papel.admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Acesso restrito a administradores",
@@ -48,4 +49,4 @@ def requer_admin(usuario=Depends(get_current_user)):
 
 def pode_gerenciar(usuario, dono_id: int | None) -> bool:
     """True se o usuário é admin ou é o próprio dono do recurso."""
-    return usuario.papel == "admin" or usuario.id == dono_id
+    return usuario.papel == Papel.admin or usuario.id == dono_id

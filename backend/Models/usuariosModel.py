@@ -3,6 +3,11 @@ from sqlalchemy.orm import relationship
 from backend.database import Base
 from pydantic import BaseModel
 from typing import Optional
+from enum import Enum
+
+class Papel(str, Enum):
+    usuario = "usuario"
+    admin = "admin"
 
 class Usuario(Base):
     __tablename__ = "usuarios"
@@ -25,7 +30,7 @@ class UsuarioUpdate(BaseModel):
     nome: Optional[str] = None
     email: Optional[str] = None
     senha: Optional[str] = None
-    papel: Optional[str] = None  # só admins podem alterar (validado no controller)
+    papel: Optional[Papel] = None  # só admins podem alterar (validado no controller)
 
 class UsuarioResponse(BaseModel):
     id: int

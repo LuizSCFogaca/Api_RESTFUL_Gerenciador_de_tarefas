@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from backend.Models.usuariosModel import Usuario, createUsuario, UsuarioUpdate
+from backend.Models.usuariosModel import Usuario, createUsuario, UsuarioUpdate, Papel
 from backend.security import hash_senha
 
 def criar(db: Session, dados: createUsuario) -> Usuario:
@@ -7,7 +7,7 @@ def criar(db: Session, dados: createUsuario) -> Usuario:
         nome=dados.nome,
         email=dados.email,
         senha=hash_senha(dados.senha),  #nao armazena senha em string pura
-        papel="usuario",
+        papel=Papel.usuario,
     )
     db.add(novo)
     db.commit()
@@ -24,7 +24,7 @@ def garantir_admin_padrao(db: Session) -> None:
         nome="Admin",
         email=email,
         senha=hash_senha("123456"),
-        papel="admin",
+        papel=Papel.admin,
     )
     db.add(admin)
     db.commit()
@@ -48,8 +48,6 @@ def atualizar(db: Session, usuario: Usuario, dados: UsuarioUpdate) -> Usuario:
     campos = dados.model_dump(exclude_unset=True)
     if "senha" in campos:  #rehash da senha
         campos["senha"] = hash_senha(campos["senha"])
-    if "papel" in campos and campos["papel"] not in ("usuario", "admin"):
-        campos["papel"] = "usuario"
     for campo, valor in campos.items():
         setattr(usuario, campo, valor)
     db.commit()

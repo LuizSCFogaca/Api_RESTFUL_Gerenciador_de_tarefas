@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from datetime import date
 from backend.database import get_db
-from backend.Models.tarefaModel import TarefaCreate, TarefaUpdate, TarefaResponse
+from backend.Models.tarefaModel import TarefaCreate, TarefaUpdate, TarefaResponse, Prioridade, Status
 from backend.Services import tarefaService
 from backend.auth import get_current_user, pode_gerenciar
 
@@ -20,9 +21,15 @@ def ler_tarefa(tarefa_id: int, db: Session = Depends(get_db)):
     return tarefa
 
 @router.get("", response_model=list[TarefaResponse])
-def listar_tarefas(assignedTo: int, db: Session = Depends(get_db)):
-    # atende GET /tasks?assignedTo={userId}
-    return tarefaService.listar_por_usuario(db, assignedTo)
+def listar_tarefas(
+    assignedTo: int | None = None,
+    status: Status | None = None,
+    priority: Prioridade | None = None,
+    dueBefore: date | None = None,
+    db: Session = Depends(get_db),
+):
+    # filtro avançado: GET /tasks?assignedTo=&status=&priority=&dueBefore= (todos opcionais)
+    return tarefaService.listar(db, assignedTo, status, priority, dueBefore)
 
 @router.put("/{tarefa_id}", response_model=TarefaResponse)
 def atualizar_tarefa(tarefa_id: int, dados: TarefaUpdate, db: Session = Depends(get_db), usuario=Depends(get_current_user)):

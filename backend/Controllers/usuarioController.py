@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from backend.database import get_db
-from backend.Models.usuariosModel import createUsuario, UsuarioUpdate, UsuarioResponse
+from backend.Models.usuariosModel import createUsuario, UsuarioUpdate, UsuarioResponse, Papel
 from backend.Services import usuarioService
 from backend.auth import get_current_user, pode_gerenciar
 
@@ -27,7 +27,7 @@ def atualizar_usuario(usuario_id: int, dados: UsuarioUpdate, db: Session = Depen
     if not pode_gerenciar(autor, usuario.id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Sem permissão para editar este usuário")
     # apenas admins podem alterar o papel de uma conta
-    if dados.papel is not None and autor.papel != "admin":
+    if dados.papel is not None and autor.papel != Papel.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Apenas administradores podem alterar o papel")
     return usuarioService.atualizar(db, usuario, dados)
 
