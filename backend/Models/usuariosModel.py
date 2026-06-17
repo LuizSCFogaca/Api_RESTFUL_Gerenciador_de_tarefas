@@ -12,6 +12,8 @@ class Usuario(Base):
     email = Column(String, nullable=False)
     senha = Column(String, nullable=False)
     ativo = Column(Boolean, default=True, nullable=False)  # soft delete: False = conta removida
+    # papel define as permissões: "usuario" (padrão) ou "admin"
+    papel = Column(String, default="usuario", nullable=False)
     tarefas = relationship("Tarefa", back_populates="dono")
 
 class createUsuario(BaseModel):
@@ -23,11 +25,13 @@ class UsuarioUpdate(BaseModel):
     nome: Optional[str] = None
     email: Optional[str] = None
     senha: Optional[str] = None
+    papel: Optional[str] = None  # só admins podem alterar (validado no controller)
 
 class UsuarioResponse(BaseModel):
     id: int
     nome: str
     email: str
+    papel: str
 
     class Config:
         from_attributes = True

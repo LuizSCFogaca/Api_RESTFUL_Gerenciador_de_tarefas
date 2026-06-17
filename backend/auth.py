@@ -34,3 +34,18 @@ def get_current_user(
         raise erro
 
     return usuario
+
+
+def requer_admin(usuario=Depends(get_current_user)):
+    """Dependency para rotas exclusivas de administrador. Devolve 403 para demais papéis."""
+    if usuario.papel != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso restrito a administradores",
+        )
+    return usuario
+
+
+def pode_gerenciar(usuario, dono_id: int | None) -> bool:
+    """True se o usuário é admin ou é o próprio dono do recurso."""
+    return usuario.papel == "admin" or usuario.id == dono_id
