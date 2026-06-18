@@ -66,4 +66,4 @@ def test_logout(client):
 def test_acesso_sem_token(client):
     # Tenta acessar logout sem token
     response = client.post("/auth/logout")
-    assert response.status_code == 403
+    assert response.status_code == 401
