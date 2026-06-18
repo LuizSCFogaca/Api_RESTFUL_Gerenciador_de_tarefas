@@ -1,3 +1,5 @@
+##João Bonfanti, Luiz Fogaça e Nicolas Vardaramatos
+
 # Gerenciador de Tarefas — API RESTful
 
 API REST para **gestão de tarefas colaborativas**: usuários se cadastram, autenticam-se via JWT, e criam/editam/atribuem/concluem tarefas. Há controle de papéis (`usuario`/`admin`), notificações opcionais via Telegram e um **bot Telegram cliente** que opera como interface conversacional sobre a API.
