@@ -32,6 +32,19 @@ services:
       db:
         condition: service_healthy
 
+  bot:
+    build: .
+    container_name: tarefas_bot
+    restart: always
+    env_file:
+      - .env
+    environment:
+      # dentro da rede do compose a API é acessada pelo host "api"
+      API_BASE_URL: http://api:8000
+    command: python -m bot.client_bot
+    depends_on:
+      - api
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: tarefas_pgadmin
