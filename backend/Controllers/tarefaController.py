@@ -10,7 +10,9 @@ from backend.auth import get_current_user, pode_gerenciar
 router = APIRouter(prefix="/tasks", tags=["Tarefas"], dependencies=[Depends(get_current_user)])
 
 @router.post("", response_model=TarefaResponse, status_code=status.HTTP_201_CREATED)
-def criar_tarefa(dados: TarefaCreate, db: Session = Depends(get_db)):
+def criar_tarefa(dados: TarefaCreate, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    if dados.usuario_id is None:
+        dados.usuario_id = usuario.id
     return tarefaService.criar(db, dados)
 
 @router.get("/{tarefa_id}", response_model=TarefaResponse)

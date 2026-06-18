@@ -1,8 +1,12 @@
+import logging
 from sqlalchemy.orm import Session
 from backend.Models.usuariosModel import Usuario, createUsuario, UsuarioUpdate, Papel
 from backend.security import hash_senha
 
+logger = logging.getLogger(__name__)
+
 def criar(db: Session, dados: createUsuario) -> Usuario:
+    logger.info(f"Criando novo usuário: {dados.email}")
     novo = Usuario(
         nome=dados.nome,
         email=dados.email,
@@ -45,6 +49,7 @@ def buscar_por_email(db: Session, email: str) -> Usuario | None:
     )
 
 def atualizar(db: Session, usuario: Usuario, dados: UsuarioUpdate) -> Usuario:
+    logger.info(f"Atualizando usuário id: {usuario.id}")
     campos = dados.model_dump(exclude_unset=True)
     if "senha" in campos:  #rehash da senha
         campos["senha"] = hash_senha(campos["senha"])
@@ -55,5 +60,6 @@ def atualizar(db: Session, usuario: Usuario, dados: UsuarioUpdate) -> Usuario:
     return usuario
 
 def remover(db: Session, usuario: Usuario) -> None:
+    logger.info(f"Removendo usuário id: {usuario.id} (soft delete)")
     usuario.ativo = False #softdelete
     db.commit()

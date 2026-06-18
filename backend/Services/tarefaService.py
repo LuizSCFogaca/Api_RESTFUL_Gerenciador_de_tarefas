@@ -1,8 +1,12 @@
+import logging
 from sqlalchemy.orm import Session
 from backend.Models.tarefaModel import Tarefa, TarefaCreate, TarefaUpdate, Status
 from backend.Services import telegramService
 
+logger = logging.getLogger(__name__)
+
 def criar(db: Session, dados: TarefaCreate) -> Tarefa:
+    logger.info(f"Criando tarefa: {dados.titulo}")
     nova = Tarefa(
         titulo=dados.titulo,
         descricao=dados.descricao,
@@ -23,6 +27,7 @@ def buscar_por_id(db: Session, tarefa_id: int) -> Tarefa | None:
     return db.query(Tarefa).filter(Tarefa.id == tarefa_id).first()
 
 def listar(db: Session, assigned_to=None, status=None, prioridade=None, due_before=None) -> list[Tarefa]:
+    logger.info(f"Listando tarefas com filtros: user={assigned_to}, status={status}")
     # cada filtro só entra na query quando o parâmetro vem preenchido
     query = db.query(Tarefa)
     if assigned_to is not None:
@@ -36,6 +41,7 @@ def listar(db: Session, assigned_to=None, status=None, prioridade=None, due_befo
     return query.all()
 
 def atualizar(db: Session, tarefa: Tarefa, dados: TarefaUpdate) -> Tarefa:
+    logger.info(f"Atualizando tarefa id: {tarefa.id}")
     usuario_antigo = tarefa.usuario_id
     status_antigo = tarefa.status
 
@@ -55,6 +61,7 @@ def atualizar(db: Session, tarefa: Tarefa, dados: TarefaUpdate) -> Tarefa:
     return tarefa
 
 def remover(db: Session, tarefa: Tarefa) -> None:
+    logger.info(f"Removendo tarefa id: {tarefa.id}")
     db.delete(tarefa)
     db.commit()
     telegramService.notificar_delecao(tarefa)
